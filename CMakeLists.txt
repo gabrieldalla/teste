@@ -1,50 +1,80 @@
-cmake_minimum_required(VERSION 2.8)
+set(tfs_SRC
+	${CMAKE_CURRENT_LIST_DIR}/otpch.cpp
+	${CMAKE_CURRENT_LIST_DIR}/actions.cpp
+	${CMAKE_CURRENT_LIST_DIR}/ban.cpp
+	${CMAKE_CURRENT_LIST_DIR}/baseevents.cpp
+	${CMAKE_CURRENT_LIST_DIR}/bed.cpp
+	${CMAKE_CURRENT_LIST_DIR}/chat.cpp
+	${CMAKE_CURRENT_LIST_DIR}/combat.cpp
+	${CMAKE_CURRENT_LIST_DIR}/commands.cpp
+	${CMAKE_CURRENT_LIST_DIR}/condition.cpp
+	${CMAKE_CURRENT_LIST_DIR}/configmanager.cpp
+	${CMAKE_CURRENT_LIST_DIR}/connection.cpp
+	${CMAKE_CURRENT_LIST_DIR}/container.cpp
+	${CMAKE_CURRENT_LIST_DIR}/creature.cpp
+	${CMAKE_CURRENT_LIST_DIR}/creatureevent.cpp
+	${CMAKE_CURRENT_LIST_DIR}/cylinder.cpp
+	${CMAKE_CURRENT_LIST_DIR}/database.cpp
+	${CMAKE_CURRENT_LIST_DIR}/databasemanager.cpp
+	${CMAKE_CURRENT_LIST_DIR}/databasetasks.cpp
+	${CMAKE_CURRENT_LIST_DIR}/depotchest.cpp
+	${CMAKE_CURRENT_LIST_DIR}/depotlocker.cpp
+	${CMAKE_CURRENT_LIST_DIR}/events.cpp
+	${CMAKE_CURRENT_LIST_DIR}/fileloader.cpp
+	${CMAKE_CURRENT_LIST_DIR}/game.cpp
+	${CMAKE_CURRENT_LIST_DIR}/globalevent.cpp
+	${CMAKE_CURRENT_LIST_DIR}/guild.cpp
+	${CMAKE_CURRENT_LIST_DIR}/groups.cpp
+	${CMAKE_CURRENT_LIST_DIR}/house.cpp
+	${CMAKE_CURRENT_LIST_DIR}/housetile.cpp
+	${CMAKE_CURRENT_LIST_DIR}/inbox.cpp
+	${CMAKE_CURRENT_LIST_DIR}/ioguild.cpp
+	${CMAKE_CURRENT_LIST_DIR}/iologindata.cpp
+	${CMAKE_CURRENT_LIST_DIR}/iomap.cpp
+	${CMAKE_CURRENT_LIST_DIR}/iomapserialize.cpp
+	${CMAKE_CURRENT_LIST_DIR}/iomarket.cpp
+	${CMAKE_CURRENT_LIST_DIR}/item.cpp
+	${CMAKE_CURRENT_LIST_DIR}/items.cpp
+	${CMAKE_CURRENT_LIST_DIR}/luascript.cpp
+	${CMAKE_CURRENT_LIST_DIR}/mailbox.cpp
+	${CMAKE_CURRENT_LIST_DIR}/map.cpp
+	${CMAKE_CURRENT_LIST_DIR}/monster.cpp
+	${CMAKE_CURRENT_LIST_DIR}/monsters.cpp
+	${CMAKE_CURRENT_LIST_DIR}/mounts.cpp
+	${CMAKE_CURRENT_LIST_DIR}/movement.cpp
+	${CMAKE_CURRENT_LIST_DIR}/networkmessage.cpp
+	${CMAKE_CURRENT_LIST_DIR}/npc.cpp
+	${CMAKE_CURRENT_LIST_DIR}/otserv.cpp
+	${CMAKE_CURRENT_LIST_DIR}/outfit.cpp
+	${CMAKE_CURRENT_LIST_DIR}/outputmessage.cpp
+	${CMAKE_CURRENT_LIST_DIR}/party.cpp
+	${CMAKE_CURRENT_LIST_DIR}/player.cpp
+	${CMAKE_CURRENT_LIST_DIR}/position.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocol.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocolspectator.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocolgamebase.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocolgame.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocollogin.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocolold.cpp
+	${CMAKE_CURRENT_LIST_DIR}/protocolstatus.cpp
+	${CMAKE_CURRENT_LIST_DIR}/quests.cpp
+	${CMAKE_CURRENT_LIST_DIR}/raids.cpp
+	${CMAKE_CURRENT_LIST_DIR}/rsa.cpp
+	${CMAKE_CURRENT_LIST_DIR}/scheduler.cpp
+	${CMAKE_CURRENT_LIST_DIR}/scriptmanager.cpp
+	${CMAKE_CURRENT_LIST_DIR}/server.cpp
+	${CMAKE_CURRENT_LIST_DIR}/spawn.cpp
+	${CMAKE_CURRENT_LIST_DIR}/spells.cpp
+	${CMAKE_CURRENT_LIST_DIR}/talkaction.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tasks.cpp
+	${CMAKE_CURRENT_LIST_DIR}/teleport.cpp
+	${CMAKE_CURRENT_LIST_DIR}/thing.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tile.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tools.cpp
+	${CMAKE_CURRENT_LIST_DIR}/trashholder.cpp
+	${CMAKE_CURRENT_LIST_DIR}/vocation.cpp
+	${CMAKE_CURRENT_LIST_DIR}/waitlist.cpp
+	${CMAKE_CURRENT_LIST_DIR}/weapons.cpp
+	${CMAKE_CURRENT_LIST_DIR}/wildcardtree.cpp
+)
 
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-
-project(tfs)
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
-include(cotire)
-
-# Initialize CXXFLAGS.
-set(CMAKE_CXX_FLAGS                "-Wall -Werror -pipe")
-set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g")
-set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE        "-Ofast -march=native -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
-endif()
-
-include(FindCXX11)
-
-# Find packages.
-find_package(GMP REQUIRED)
-find_package(MySQL)
-find_package(LuaJIT)
-find_package(Threads)
-
-if (LUAJIT_FOUND)
-    add_definitions(-D__LUAJIT__)
-    if(APPLE)
-      set(CMAKE_EXE_LINKER_FLAGS "-pagezero_size 10000 -image_base 100000000")
-    endif()
-else()
-    find_package(Lua)
-endif()
-
-find_package(Boost 1.53.0 COMPONENTS system REQUIRED)
-
-include(src/CMakeLists.txt)
-add_executable(tfs ${tfs_SRC})
-
-include_directories(${MYSQL_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${GMP_INCLUDE_DIR})
-target_link_libraries(tfs ${MYSQL_CLIENT_LIBS} ${LUA_LIBRARIES} ${Boost_LIBRARIES} ${GMP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-
-set_target_properties(tfs PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "src/otpch.h")
-set_target_properties(tfs PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-cotire(tfs)
